@@ -25,6 +25,21 @@ router.get(`/get/count`, async (req, res) => {
         })
 })
 
+router.get(`/get/featured/:count`, async (req, res) => {
+    const count = req.params.count ? req.params.count : 0
+    const featuredProducts = await Product
+    .find({isFeatured: true})
+    .select('name ')
+    .limit(+count)
+
+    if(!featuredProducts){
+        res.status(500).json({succes:false})
+    }
+    res.send({
+        featuredProducts
+        })
+})
+
 router.get(`/:id`, async (req, res) => {
     const product = await Product.findById(req.params.id).populate('category')
 
