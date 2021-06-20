@@ -6,7 +6,12 @@ const router = express.Router();
 const mongoose = require('mongoose')
 
 router.get(`/`, async (req, res) => {
-    const productList = await Product.find().select('name image')
+    let filter = {}
+    if(req.query.categories){
+        filter = {category: req.query.categories.split(',')}
+    }
+
+    const productList = await Product.find(filter).select('name image category')
 
     if(!productList){
         res.status(500).json({succes:false})
@@ -29,7 +34,6 @@ router.get(`/get/featured/:count`, async (req, res) => {
     const count = req.params.count ? req.params.count : 0
     const featuredProducts = await Product
     .find({isFeatured: true})
-    .select('name ')
     .limit(+count)
 
     if(!featuredProducts){
