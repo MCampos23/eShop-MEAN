@@ -21,6 +21,35 @@ router.get(`/:id`, async (req, res) => {
     res.send(user)
 })
 
+router.put('/:id', async (req,res) => {
+    const userExists = await User.findById(req.params.id)
+    if(req.body.password) {
+        newPassword = bcrypt.hashSync(req.body.password, 10)
+    }else {
+        newPassword = userExists.passwordHash
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+        req.params.id,
+        {
+            name: req.body.name,
+            email: req.body.email,
+            phone: req.body.phone,
+            isAdmin: req.body.isAdmin,
+            passwordHash: newPassword,
+            street: req.body.street,
+            apartment: req.body.apartment,
+            zip: req.body.zip,
+            city: req.body.city,
+            country: req.body.country
+        },
+        { new: true}
+        )
+        if(!updatedUser)
+    return res.status(404).send('The category cannot be created')
+    
+    res.send(updatedUser)
+})
 router.post(`/`, async (req, res) => {
      
 
