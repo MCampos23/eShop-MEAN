@@ -107,6 +107,15 @@ router.delete('/:id', (req, res) => {
         return res.status(400).json({success: false, error: err})
     })
 })
+router.get('/get/userorders/:userid', async(req, res) => {
+
+    const filter = { user: req.params.userid}
+    const userOrders = await Order.find(filter)
+
+    if(userOrders)
+    res.send(userOrders)
+})
+
 
 router.get('/get/totalsales', async(req, res) => {
     const totalSales = await Order.aggregate([
