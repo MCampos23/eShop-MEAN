@@ -14,7 +14,12 @@ const FYLE_TYPE_MAP = {
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, 'public/uploads')
+      const isValid = FYLE_TYPE_MAP[file.mimetype]
+      let uploadError = new Error('Invalid format file')
+      if(isValid){
+          uploadError = null
+      }
+      cb(uploadError, 'public/uploads')
     },
     filename: function (req, file, cb) {
       const fileName = file.originalname.split(' ').join('-')
@@ -118,6 +123,10 @@ router.put(`/:id`, async (req, res) => {
 router.post(`/`, uploadOptions.single('image'), async (req, res) => {
     const category = await Category.findById(req.body.category)
     if (!category) return res.status(400).send('Invalid category')
+    
+    const file = req.file
+    if (!file) return res.status(400).send('No image in the request')
+
     const fileName = req.file.filename
     const basePath = `${req.protocol}://${req.get('host')}/public/upload/`
     
