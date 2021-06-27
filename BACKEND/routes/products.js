@@ -152,5 +152,34 @@ router.post(`/`, uploadOptions.single('image'), async (req, res) => {
     
     res.send(product)    
 })
+router.put(`/gallery-images/:id`,
+    uploadOptions.array('images', 10),   
+    async (req, res) => { 
+        if (!mongoose.isValidObjectId(req.params.id)){
+            return res.status(400).send('Invalid Product ID')
+        }       
+        const files = req.files
+        let imagesPaths = []   
+        const basePath = `${req.protocol}://${req.get('host')}/public/upload/`
+        if(files){
+            files.map(file =>  {
+                imagesPaths.push(`${basePath}${file.filename}`)
+            })
+        }
+        console.log(files)
+        const product = await Product.findByIdAndUpdate(
+            req.params.id,
+            {
+                images: imagesPaths
+            },
+            {new: true}
+        )
+        if(!product){
+            res.status(500).json({success:false})
+        }
+
+        res.send(product)
+        })
+
 
 module.exports = router
