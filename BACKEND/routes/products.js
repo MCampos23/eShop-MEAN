@@ -90,19 +90,32 @@ router.delete(`/:id`, async (req, res) => {
     })
 })
 
-router.put(`/:id`, async (req, res) => {
+router.put(`/:id`, uploadOptions.single('image'), async (req, res) => {
     if (!mongoose.isValidObjectId(req.params.id))
         return res.status(400).send('Invalid Product ID')
     const category = await Category.findById(req.body.category)
     if (!category) return res.status(400).send('Invalid category')
+
+    const product = await Product.findById(req.params.id)
+    if(!product) return res.status(400).send('Invalid Product')
    
-    let product = await Product.findByIdAndUpdate(
+    const file = req.file
+    let imagePath
+
+    if(file){
+        const fileName = req.file.filename
+        const basePath = `${req.protocol}://${req.get('host')}/public/upload/`
+        imagePath = `${basePath}${fileName}`
+    }else{
+        imagePath = product.image
+    }
+    let updatedProduct = await Product.findByIdAndUpdate(
         req.params.id,
         {
         name: req.body.name,
         description: req.body.description,
         richDescription: req.body.richDescription,
-        image: req.body.image,
+        image: imagePath,
         images: req.body.images,
         brand: req.body.brand,
         price: req.body.price,
@@ -114,10 +127,10 @@ router.put(`/:id`, async (req, res) => {
         },
         {new: true}
         )
-    if(!product){
+    if(!updatedProduct){
         res.status(500).json({success:false})
     }
-    res.send(product)
+    res.send(updatedProduct)
 })
 
 router.post(`/`, uploadOptions.single('image'), async (req, res) => {
