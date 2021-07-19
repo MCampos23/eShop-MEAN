@@ -22,8 +22,9 @@ router.get(`/`, async (req, res) => {
 router.get(`/:id`, async (req, res) => {
     const order = await Order.findById(req.params.id)
                              
-                             .populate({path: 'orderItems', select: 'quantity product', populate:{path: 'product', select: 'price' }
+                             .populate({path: 'orderItems', select: 'quantity product', populate:{path: 'product', populate: 'category' }                             
                               })
+                              .populate('user')
                              
     if(!order){
         res.status(500).json({success: false})
