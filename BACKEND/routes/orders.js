@@ -53,8 +53,7 @@ router.post(`/`, async (req, res) => {
 
     const totalPrice = totalPrices.reduce((a,b) => a + b, 0)
 
-    console.log(totalPrices)
-    let order = new Order({
+      let order = new Order({
         orderItems: orderItemsIdsResolved,
         shippingAddress1: req.body.shippingAddress1,
         shippingAddress2: req.body.shippingAddress1,

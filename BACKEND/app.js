@@ -33,7 +33,8 @@ app.use(`${api}/orders`, ordersRoutes);
 mongoose.connect(process.env.CONNECTION_STRING,
     { 
         useNewUrlParser: true,
-        useUnifiedTopology: true
+        useUnifiedTopology: true,
+        dbName: process.env.DB_NAME
     })
 .then(()=>{
     console.log("db connection is ready")
@@ -42,7 +43,9 @@ mongoose.connect(process.env.CONNECTION_STRING,
     console.log(err)
 })
 
+const PORT = process.env.PORT || 3000
+
 //Server
-app.listen(3000, ()=>{
+app.listen(PORT, ()=>{
     console.log("Server running on 3000 port")
 })
